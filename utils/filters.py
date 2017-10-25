@@ -49,7 +49,7 @@ def gaussian_filter(image, kernel_size, sigma=3):
 
 def sobel_filter(image, direction):
     if direction is not 'x' and direction is not 'y':
-        raise Exception('No direction specified. Value fhould be x or y.')
+        raise Exception('No direction specified. Value should be x or y.')
 
     kernel_x = np.array(
         [
@@ -73,4 +73,11 @@ def sobel_filter(image, direction):
         return convolve(image, kernel_y)
 
 
+def intensity_gradient(image):
+    g_x = sobel_filter(image, 'x')
+    g_y = sobel_filter(image, 'y')
 
+    magnitude = np.sqrt(np.power(g_x, 2) + np.power(g_y, 2))
+    theta = np.arctan2(g_y, g_x)
+
+    return magnitude, theta
