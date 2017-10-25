@@ -35,7 +35,9 @@ def convolve(image, kernel):
     # Add zero padding to the input image
     image_padded = np.zeros((image.shape[0] + 2 * padding, image.shape[1] + 2 * padding))
     image_padded[padding:-padding, padding:-padding] = image
-    for x in range(image.shape[1]):         # Loop over every pixel of the image
+
+    # Loop over every pixel of the image
+    for x in range(image.shape[1]):
         for y in range(image.shape[0]):
             # element-wise multiplication of the kernel and the image
             output[y, x] = (kernel * image_padded[y:y + kernel_i, x:x + kernel_j]).sum()
@@ -43,11 +45,17 @@ def convolve(image, kernel):
 
 
 def gaussian_filter(image, kernel_size, sigma=3):
+    """
+    Constructs the gaussian kernel and applies it using convolution.
+    """
     kernel = create_gaussian_kernel(kernel_size, sigma)
     return convolve(image, kernel)
 
 
 def sobel_filter(image, direction):
+    """
+    Finds the x or y axis derivative of the given image.
+    """
     if direction is not 'x' and direction is not 'y':
         raise Exception('No direction specified. Value should be x or y.')
 
@@ -74,6 +82,9 @@ def sobel_filter(image, direction):
 
 
 def intensity_gradient(image):
+    """
+    Finds the magnitude and element-wise direction angle of the image.
+    """
     g_x = sobel_filter(image, 'x')
     g_y = sobel_filter(image, 'y')
 
