@@ -77,8 +77,8 @@ def sobel_filter(image, direction):
 
     if direction is 'x':
         return convolve(image, kernel_x)
-    else:
-        return convolve(image, kernel_y)
+
+    return convolve(image, kernel_y)
 
 
 def intensity_gradient(image):
