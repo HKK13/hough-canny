@@ -95,3 +95,16 @@ def hysteresis_threshold(gradient, low_threshold, high_threshold):
 
     return output
 
+
+def canny_edge_detection(image, kernel_size, sigma, low_threshold, high_threshold):
+    gaussian_blurred = gaussian_filter(image, kernel_size, sigma)
+    gradient, theta = intensity_gradient(gaussian_blurred)
+    suppressed_gradient = non_max_suppression(gradient, theta)
+    thresholded_image = [[]]
+
+    if not high_threshold:
+        thresholded_image = standard_threshold(suppressed_gradient, low_threshold)
+    else:
+        thresholded_image = hysteresis_threshold(suppressed_gradient, low_threshold, high_threshold)
+
+    return thresholded_image
