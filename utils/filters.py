@@ -46,3 +46,31 @@ def gaussian_filter(image, kernel_size, sigma=3):
     kernel = create_gaussian_kernel(kernel_size, sigma)
     return convolve(image, kernel)
 
+
+def sobel_filter(image, direction):
+    if direction is not 'x' and direction is not 'y':
+        raise Exception('No direction specified. Value fhould be x or y.')
+
+    kernel_x = np.array(
+        [
+            [-1, 0, 1],
+            [-2, 0, 2],
+            [-1, 0, 1]
+        ]
+    )
+
+    kernel_y = np.array(
+        [
+            [-1, -2, -1],
+            [ 0,  0,  0],
+            [ 1,  2,  1]
+        ]
+    )
+
+    if direction is 'x':
+        return convolve(image, kernel_x)
+    else:
+        return convolve(image, kernel_y)
+
+
+
