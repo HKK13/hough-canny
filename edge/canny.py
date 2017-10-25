@@ -45,7 +45,7 @@ def non_max_suppression(gradient, theta):
 
 
 def standard_threshold(gradient, threshold):
-    return gradient > threshold
+    return (gradient > threshold) * gradient
 
 
 def hysteresis_threshold(gradient, low_threshold, high_threshold):
@@ -56,8 +56,8 @@ def hysteresis_threshold(gradient, low_threshold, high_threshold):
     are checked if they are connected to strong edges.
     """
 
-    strong_edges = (np.array(gradient) > high_threshold)
-    edges = (np.array(gradient) > low_threshold)
+    strong_edges = (gradient > high_threshold) * gradient
+    edges = strong_edges + (np.array(gradient) > low_threshold) * gradient
     output = strong_edges.copy()
 
     height, width = gradient.shape
