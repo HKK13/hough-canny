@@ -1,7 +1,14 @@
 import numpy as np
+from utils.filters import gaussian_filter, intensity_gradient
 
 
 def non_max_suppression(gradient, theta):
+    """
+    Compares the current pixel with every neighbouring pixel
+    to check whether if it is local maximum or not,
+    if not then it is suppressed.
+    """
+
     grad_sup = gradient.copy()
 
     # Quantizes the direction values between [0, 5)
@@ -22,16 +29,69 @@ def non_max_suppression(gradient, theta):
 
             tq = theta_q[i, j] % 4
 
-            if tq == 0:  # 0 is E-W (horizontal)
+            if tq == 0:  # E-W
                 if gradient[i, j] <= gradient[i, j - 1] or gradient[i, j] <= gradient[i, j + 1]:
                     grad_sup[i, j] = 0
-            if tq == 1:  # 1 is NE-SW
+            if tq == 1:  # NE-SW
                 if gradient[i, j] <= gradient[i - 1, j + 1] or gradient[i, j] <= gradient[i + 1, j - 1]:
                     grad_sup[i, j] = 0
-            if tq == 2:  # 2 is N-S (vertical)
+            if tq == 2:  # 2 N-S
                 if gradient[i, j] <= gradient[i - 1, j] or gradient[i, j] <= gradient[i + 1, j]:
                     grad_sup[i, j] = 0
-            if tq == 3:  # 3 is NW-SE
+            if tq == 3:  # NW-SE
                 if gradient[i, j] <= gradient[i - 1, j - 1] or gradient[i, j] <= gradient[i + 1, j + 1]:
                     grad_sup[i, j] = 0
     return grad_sup
+
+
+def standard_threshold(gradient, threshold):
+    return gradient > threshold
+
+
+def hysteresis_threshold(gradient, low_threshold, high_threshold):
+    """
+    Applies two thresholds for deciding if the edges are really edges.
+    Ones higher than the high_threshold considered strong edges and the
+    ones that are lower than low_threshold set to 0. Finally values between
+    are checked if they are connected to strong edges.
+    """
+
+    strong_edges = (np.array(gradient) > high_threshold)
+    edges = (np.array(gradient) > low_threshold)
+    output = strong_edges.copy()
+
+    height, width = gradient.shape
+
+    current_pixels = []
+    for i in range(1, height-1):
+        for j in range(1, width-1):
+
+            if edges[i, j] != 1:
+                continue
+
+            local_patch = edges[i-1:i+2, j-1:j+2]
+            patch_max = local_patch.max()
+
+            if patch_max == 2:
+                current_pixels.append((i, j))
+                output[i, j] = 1
+
+    temp_pixels = []
+    while len(current_pixels) > 0:
+        for i, j in current_pixels:
+            for di in range(-1, 2):
+                for dj in range(-1, 2):
+
+                    if di == 0 and dj == 0:
+                        continue
+
+                    i2 = i + di
+                    j2 = j + dj
+
+                    if edges[i2, j2] == 1 and output[i2, j2] == 0:
+                        temp_pixels.append((i2, j2))
+                        output[i2, j2]
+        current_pixels = temp_pixels
+
+    return output
+
