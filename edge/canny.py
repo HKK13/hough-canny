@@ -90,7 +90,7 @@ def hysteresis_threshold(gradient, low_threshold, high_threshold):
 
                     if edges[i2, j2] == 1 and output[i2, j2] == 0:
                         temp_pixels.append((i2, j2))
-                        output[i2, j2]
+                        output[i2, j2] = 1
         current_pixels = temp_pixels
 
     return output
